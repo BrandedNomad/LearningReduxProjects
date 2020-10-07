@@ -1,5 +1,16 @@
 
 
+//Reducer: takes in a state and a action and reduces it to a new state
+//Always a pure function
+function todos(state =[],action){ //initially state is undefined so need to set it's default
+    if(action.type === 'ADD_TODO'){
+        return state.concat([action.todo])
+    }
+
+    return state
+}
+
+//Store
 function createStore(){
 
     let state
@@ -20,6 +31,8 @@ function createStore(){
         }
 
     }
+
+    //Update State
 
     return {
         getState,
