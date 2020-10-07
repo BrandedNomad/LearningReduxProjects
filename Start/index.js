@@ -41,18 +41,24 @@ function createStore(reducer){
 
 //App Code
 
+const ADD_TODO = 'ADD_TODO';
+const TOGGLE_TODO = 'TOGGLE_TODO';
+const REMOVE_TODO = 'REMOVE_TODO';
+const ADD_GOAL = 'ADD_GOAL';
+const REMOVE_GOAL='REMOVE_GOAL';
+
 //Reducer: takes in a state and a action and reduces it to a new state
 //Always a pure function
 function todos(state =[],action){ //initially state is undefined so need to set it's default
 
     switch(action.type){
-        case 'ADD_TODO':
+        case ADD_TODO:
             return state.concat([action.todo])
-        case 'REMOVE_TODO':
+        case REMOVE_TODO:
             return state.filter((todo)=>{
                 return todo.name !== action.todo.name
             })
-        case 'TOGGLE_TODO':
+        case TOGGLE_TODO:
             return state.map((todo)=>{
                 return todo.name !== action.todo.name ? todo:
                     Object.assign({},todo,{complete:!todo.complete})
@@ -67,9 +73,9 @@ function todos(state =[],action){ //initially state is undefined so need to set 
 function goals(state=[],action){
 
     switch(action.type){
-        case 'ADD_GOAL':
+        case ADD_GOAL:
             return state.concat([action.goal])
-        case 'REMOVE_GOAL':
+        case REMOVE_GOAL:
             return state.filter((goal)=>{
                 return goal.name !== action.goal.name
             })
@@ -81,7 +87,7 @@ function goals(state=[],action){
 //reducer
 function app (state = {},action){
     return{
-        todos:todos(state.todo,action),
+        todos:todos(state.todos,action),
         goals:goals(state.goals,action)
     }
 }
@@ -95,7 +101,7 @@ const unsubscribe = x.subscribe(()=>{
 })
 
 x.dispatch({
-    type:'ADD_TODO',
+    type:ADD_TODO,
     todo:{
         id:0,
         name:'Go for a run',
@@ -104,7 +110,7 @@ x.dispatch({
 })
 
 x.dispatch({
-    type:'ADD_TODO',
+    type:ADD_TODO,
     todo:{
         id:1,
         name:'Go for a walk',
@@ -113,14 +119,31 @@ x.dispatch({
 })
 
 x.dispatch({
-    type:'TOGGLE_TODO',
+    type:ADD_TODO,
+    todo:{
+        id:2,
+        name:'Go for a icecream',
+        complete:false
+    }
+})
+
+x.dispatch({
+    type:ADD_GOAL,
+    goal:{
+        id:0,
+        name:'Study Architecture'
+    }
+})
+
+x.dispatch({
+    type:TOGGLE_TODO,
     todo:{
         name:'Go for a run'
     }
 })
 
 x.dispatch({
-    type:'REMOVE_TODO',
+    type:REMOVE_TODO,
     todo:{
         name:'Go for a walk'
     }
