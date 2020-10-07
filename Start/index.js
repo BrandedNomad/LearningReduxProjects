@@ -63,6 +63,7 @@ function todos(state =[],action){ //initially state is undefined so need to set 
 
 }
 
+//reducer
 function goals(state=[],action){
 
     switch(action.type){
@@ -77,9 +78,15 @@ function goals(state=[],action){
     }
 }
 
-function
+//reducer
+function app (state = {},action){
+    return{
+        todos:todos(state.todo,action),
+        goals:goals(state.goals,action)
+    }
+}
 
-const x = createStore(todos)
+const x = createStore(app)
 
 x.getState();
 
