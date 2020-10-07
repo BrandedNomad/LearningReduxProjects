@@ -47,6 +47,47 @@ const REMOVE_TODO = 'REMOVE_TODO';
 const ADD_GOAL = 'ADD_GOAL';
 const REMOVE_GOAL='REMOVE_GOAL';
 
+function addToDoAction(todo){
+    return {
+        type:ADD_TODO,
+        todo
+    }
+}
+
+function toggleToDoAction(name){
+    return {
+        type:TOGGLE_TODO,
+        todo:{
+            name
+        }
+    }
+}
+
+function removeToDoAction(name){
+    return {
+        type:REMOVE_TODO,
+        todo:{
+            name
+        }
+    }
+}
+
+function addGoalAction(goal){
+    return {
+        type:ADD_GOAL,
+        goal
+    }
+}
+
+function removeGoalAction(name){
+    return {
+        type:REMOVE_GOAL,
+        goal:{
+            name
+        }
+    }
+}
+
 //Reducer: takes in a state and a action and reduces it to a new state
 //Always a pure function
 function todos(state =[],action){ //initially state is undefined so need to set it's default
@@ -100,14 +141,7 @@ const unsubscribe = x.subscribe(()=>{
     console.log('this new state is: ', x.getState())
 })
 
-x.dispatch({
-    type:ADD_TODO,
-    todo:{
-        id:0,
-        name:'Go for a run',
-        complete:false
-    }
-})
+x.dispatch(addToDoAction({id:0,name:'Go fish', complete:false}))
 
 x.dispatch({
     type:ADD_TODO,
