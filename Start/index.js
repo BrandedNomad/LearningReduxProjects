@@ -1,17 +1,8 @@
 
-
-//Reducer: takes in a state and a action and reduces it to a new state
-//Always a pure function
-function todos(state =[],action){ //initially state is undefined so need to set it's default
-    if(action.type === 'ADD_TODO'){
-        return state.concat([action.todo])
-    }
-
-    return state
-}
+//library code
 
 //Store
-function createStore(){
+function createStore(reducer){
 
     let state
     let listeners = []
@@ -33,7 +24,7 @@ function createStore(){
     }
 
     const dispatch = (action)=>{
-        state = todos(state,action)
+        state = reducer(state,action)
         listeners.forEach((listener)=>{
             listener()
         })
@@ -43,6 +34,76 @@ function createStore(){
 
     return {
         getState,
-        subscribe
+        subscribe,
+        dispatch
     }
 }
+
+//App Code
+
+//Reducer: takes in a state and a action and reduces it to a new state
+//Always a pure function
+function todos(state =[],action){ //initially state is undefined so need to set it's default
+
+    switch(action.type){
+        case 'ADD_TODO':
+            return state.concat([action.todo])
+        case 'REMOVE_TODO':
+            return state.filter((todo)=>{
+                return todo.name !== action.todo.name
+            })
+        case 'TOGGLE_TODO':
+            return state.map((todo)=>{
+                if(todo.name === action.todo.name){
+                    todo.complete = !todo.complete;
+                }
+                return todo
+            })
+        default:
+            return
+    }
+
+}
+
+const x = createStore(todos)
+
+x.getState();
+
+const unsubscribe = x.subscribe(()=>{
+    console.log('this new state is: ', x.getState())
+})
+
+x.dispatch({
+    type:'ADD_TODO',
+    todo:{
+        id:0,
+        name:'Go for a run',
+        complete:false
+    }
+})
+
+x.dispatch({
+    type:'ADD_TODO',
+    todo:{
+        id:1,
+        name:'Go for a walk',
+        complete:false
+    }
+})
+
+x.dispatch({
+    type:'TOGGLE_TODO',
+    todo:{
+        name:'Go for a run'
+    }
+})
+
+x.dispatch({
+    type:'REMOVE_TODO',
+    todo:{
+        name:'Go for a walk'
+    }
+})
+
+
+
