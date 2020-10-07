@@ -54,16 +54,30 @@ function todos(state =[],action){ //initially state is undefined so need to set 
             })
         case 'TOGGLE_TODO':
             return state.map((todo)=>{
-                if(todo.name === action.todo.name){
-                    todo.complete = !todo.complete;
-                }
-                return todo
+                return todo.name !== action.todo.name ? todo:
+                    Object.assign({},todo,{complete:!todo.complete})
             })
         default:
-            return
+            return state
     }
 
 }
+
+function goals(state=[],action){
+
+    switch(action.type){
+        case 'ADD_GOAL':
+            return state.concat([action.goal])
+        case 'REMOVE_GOAL':
+            return state.filter((goal)=>{
+                return goal.name !== action.goal.name
+            })
+        default:
+            return state
+    }
+}
+
+function
 
 const x = createStore(todos)
 
