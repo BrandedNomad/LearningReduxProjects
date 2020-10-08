@@ -143,45 +143,15 @@ const unsubscribe = x.subscribe(()=>{
 
 x.dispatch(addToDoAction({id:0,name:'Go fish', complete:false}))
 
-x.dispatch({
-    type:ADD_TODO,
-    todo:{
-        id:1,
-        name:'Go for a walk',
-        complete:false
-    }
-})
+x.dispatch(addToDoAction({ id:1, name:'Go for a walk',complete:false}))
 
-x.dispatch({
-    type:ADD_TODO,
-    todo:{
-        id:2,
-        name:'Go for a icecream',
-        complete:false
-    }
-})
+x.dispatch(addToDoAction({id:2,name:'Go for a icecream', complete:false}))
 
-x.dispatch({
-    type:ADD_GOAL,
-    goal:{
-        id:0,
-        name:'Study Architecture'
-    }
-})
+x.dispatch(addGoalAction({ id:0, name:'Study Architecture'}))
 
-x.dispatch({
-    type:TOGGLE_TODO,
-    todo:{
-        name:'Go for a run'
-    }
-})
+x.dispatch(toggleToDoAction('Go for a run'))
 
-x.dispatch({
-    type:REMOVE_TODO,
-    todo:{
-        name:'Go for a walk'
-    }
-})
+x.dispatch(removeToDoAction('Go for a walk'))
 
 
 
