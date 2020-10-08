@@ -20,6 +20,8 @@
 
 
     <script type="text/javascript">
+
+
         //library code
 
         //Store
@@ -154,25 +156,60 @@
             }
         }
 
-        const x = createStore(app)
+        const store = createStore(app)
 
-        x.getState();
+        store.getState();
 
-        const unsubscribe = x.subscribe(()=>{
-            console.log('this new state is: ', x.getState())
+        const unsubscribe = store.subscribe(()=>{
+            const {goals,todos} = store.getState()
+
+            document.getElementById('todoList').innerHTML = ''
+
+            todos.forEach(addToToDoList)
+
         })
 
-        x.dispatch(addToDoAction({id:0,name:'Go fish', complete:false}))
 
-        x.dispatch(addToDoAction({ id:1, name:'Go for a walk',complete:false}))
 
-        x.dispatch(addToDoAction({id:2,name:'Go for a icecream', complete:false}))
+        // x.dispatch(addToDoAction({id:0,name:'Go fish', complete:false}))
+        //
+        // x.dispatch(addToDoAction({ id:1, name:'Go for a walk',complete:false}))
+        //
+        // x.dispatch(addToDoAction({id:2,name:'Go for a icecream', complete:false}))
+        //
+        // x.dispatch(addGoalAction({ id:0, name:'Study Architecture'}))
+        //
+        // x.dispatch(toggleToDoAction('Go for a run'))
+        //
+        // x.dispatch(removeToDoAction('Go for a walk'))
 
-        x.dispatch(addGoalAction({ id:0, name:'Study Architecture'}))
+        function addToDo(){
+            const input = document.getElementById("todoInput")
+            const name = input.value
+            input.value=''
+            const state = store.getState()
+            let id = 0;
+            if(state !== undefined){
+                id = state.todos.length
+            }
 
-        x.dispatch(toggleToDoAction('Go for a run'))
+            store.dispatch(addToDoAction({id,name,complete:false}))
+        }
 
-        x.dispatch(removeToDoAction('Go for a walk'))
+
+
+
+        function addToToDoList(todo){
+            const list = store.getState()
+            const node = document.createElement('li')
+            const text = document.createTextNode(todo.name)
+            node.appendChild(text)
+
+            const ul = document.getElementById('todoList').appendChild(node)
+
+        }
+
+        document.getElementById('todoBtn').addEventListener('click',addToDo)
 
 
 
