@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Todos and Goals</title>
+    <style>
+        .red {color:red}
+    </style>
 </head>
 <body>
     <div>
@@ -164,8 +167,10 @@
             const {goals,todos} = store.getState()
 
             document.getElementById('todoList').innerHTML = ''
+            document.getElementById('goalsList').innerHTML = ''
 
             todos.forEach(addToToDoList)
+            goals.forEach(addToGoalList)
 
         })
 
@@ -200,18 +205,50 @@
 
 
         function addToToDoList(todo){
-            const list = store.getState()
             const node = document.createElement('li')
+            node.setAttribute("onClick", "toggleTodo(event)")
+            if(todo.complete){
+                node.setAttribute("class","red")
+            }
             const text = document.createTextNode(todo.name)
             node.appendChild(text)
-
             const ul = document.getElementById('todoList').appendChild(node)
 
         }
 
+        function addGoal(){
+            const input = document.getElementById("goalInput")
+            const name = input.value
+            input.value=''
+            const state = store.getState()
+            let id = 0;
+            if(state !== undefined){
+                id = state.goals.length
+            }
+
+            store.dispatch(addGoalAction({id,name}))
+        }
+
+
+
+
+        function addToGoalList(goal){
+            const list = store.getState()
+            const node = document.createElement('li')
+            const text = document.createTextNode(goal.name)
+
+            node.appendChild(text)
+
+            const ul = document.getElementById('goalsList').appendChild(node)
+
+        }
+
         document.getElementById('todoBtn').addEventListener('click',addToDo)
+        document.getElementById('goalBtn').addEventListener('click',addGoal)
 
-
+        function toggleTodo(event){
+           store.dispatch(toggleToDoAction(event.target.innerText))
+        }
 
     </script>
 
