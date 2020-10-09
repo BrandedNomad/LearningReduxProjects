@@ -33,7 +33,7 @@
         const ADD_GOAL = 'ADD_GOAL';
         const REMOVE_GOAL='REMOVE_GOAL';
 
-
+        //Action generators
         function addToDoAction(todo){
             return {
                 type:ADD_TODO,
@@ -89,7 +89,7 @@
                 case TOGGLE_TODO:
                     return state.map((todo)=>{
                         return todo.name !== action.todo.name ? todo:
-                            Object.assign({},todo,{complete:!todo.complete})
+                            Object.assign({},todo,{complete:!todo.complete}) //use Object assign in order not to mutate the original object (pure function)
                     })
                 default:
                     return state
@@ -112,18 +112,29 @@
             }
         }
 
-        //reducer
+        //middleware
+        function checkAndDispatch(state,action){
+            if(action.type === 'ADD_TODO' && action.todo.name.toLowerCase().includes("bitcoin")){
+                return alert("Bitcoin not allowed")
+            }
+
+            if(action.type === 'ADD_GOAL' && action.goal.name.toLowerCase().includes("bitcoin")){
+                return alert("Bitcoin not allowed")
+            }
+
+            return store.dispatch(action)
+        }
 
 
-
-
+        //Create the store
         const store = Redux.createStore(Redux.combineReducers({
             todos,
             goals
         }))
 
-        store.getState();
+        //store.getState();
 
+        //subscribing to store
         const unsubscribe = store.subscribe(()=>{
             const {goals,todos} = store.getState()
 
@@ -136,7 +147,7 @@
         })
 
 
-
+        //adds to do to state
         function addToDo(){
             const input = document.getElementById("todoInput")
             const name = input.value
@@ -147,12 +158,12 @@
                 id = state.todos.length
             }
 
-            store.dispatch(addToDoAction({id,name,complete:false}))
+            checkAndDispatch(state,addToDoAction({id,name,complete:false}))
         }
 
 
 
-
+        //lists to do items
         function addToToDoList(todo){
             //dom elements
             const listItem = document.createElement('li');
@@ -188,6 +199,7 @@
 
         }
 
+        //Adds goal to state
         function addGoal(){
             const input = document.getElementById("goalInput")
             const name = input.value
@@ -202,8 +214,7 @@
         }
 
 
-
-
+        //lists the goal items
         function addToGoalList(goal){
             const list = store.getState()
 
@@ -237,17 +248,21 @@
 
         }
 
+        //Listens for clicks on buttons that adds state
         document.getElementById('todoBtn').addEventListener('click',addToDo)
         document.getElementById('goalBtn').addEventListener('click',addGoal)
 
+        //toggles the color of to do
         function toggleTodo(event){
            store.dispatch(toggleToDoAction(event.target.innerText))
         }
 
+        //removes to do from lis
         function removeTodoEvent(event){
             store.dispatch(removeToDoAction(event.target.parentNode.firstChild.innerText))
         }
 
+        //removes goal from list
         function removeGoalEvent(event){
             store.dispatch(removeGoalAction(event.target.parentNode.firstChild.innerText))
         }
