@@ -26,19 +26,13 @@
     <script type="text/javascript">
 
 
-        //library code
-
-        //Store
-
-
-
-        //App Code
-
+        //Constants
         const ADD_TODO = 'ADD_TODO';
         const TOGGLE_TODO = 'TOGGLE_TODO';
         const REMOVE_TODO = 'REMOVE_TODO';
         const ADD_GOAL = 'ADD_GOAL';
         const REMOVE_GOAL='REMOVE_GOAL';
+
 
         function addToDoAction(todo){
             return {
@@ -143,18 +137,6 @@
 
 
 
-        // x.dispatch(addToDoAction({id:0,name:'Go fish', complete:false}))
-        //
-        // x.dispatch(addToDoAction({ id:1, name:'Go for a walk',complete:false}))
-        //
-        // x.dispatch(addToDoAction({id:2,name:'Go for a icecream', complete:false}))
-        //
-        // x.dispatch(addGoalAction({ id:0, name:'Study Architecture'}))
-        //
-        // x.dispatch(toggleToDoAction('Go for a run'))
-        //
-        // x.dispatch(removeToDoAction('Go for a walk'))
-
         function addToDo(){
             const input = document.getElementById("todoInput")
             const name = input.value
@@ -172,14 +154,37 @@
 
 
         function addToToDoList(todo){
-            const node = document.createElement('li')
-            node.setAttribute("onClick", "toggleTodo(event)")
-            if(todo.complete){
-                node.setAttribute("class","red")
-            }
+            //dom elements
+            const listItem = document.createElement('li');
+            const textDiv = document.createElement('div');
+            const removeBtn = document.createElement('button');
             const text = document.createTextNode(todo.name)
-            node.appendChild(text)
-            const ul = document.getElementById('todoList').appendChild(node)
+
+            //attributes
+            textDiv.setAttribute("onClick", "toggleTodo(event)")
+            textDiv.setAttribute("style","display:inline")
+            if(todo.complete){
+                textDiv.setAttribute("class","red")
+            }
+
+            //combining elements
+            //const textBox = textDiv.appendChild(text)
+            removeBtn.setAttribute("onClick","removeTodoEvent(event)")
+
+            const btnText = document.createTextNode('X')
+            removeBtn.appendChild(btnText)
+
+
+            //add to listItem
+            listItem.appendChild(textDiv).appendChild(text)
+            listItem.appendChild(removeBtn)
+
+
+            //add to list
+            const ul = document.getElementById('todoList')
+            ul.appendChild(listItem)
+
+
 
         }
 
@@ -201,12 +206,34 @@
 
         function addToGoalList(goal){
             const list = store.getState()
-            const node = document.createElement('li')
+
+
+            //
+            //dom elements
+            const listItem = document.createElement('li');
+            const textDiv = document.createElement('div');
+            const removeBtn = document.createElement('button');
             const text = document.createTextNode(goal.name)
 
-            node.appendChild(text)
+            //attributes
+            textDiv.setAttribute("style","display:inline")
 
-            const ul = document.getElementById('goalsList').appendChild(node)
+
+            //combining elements
+            removeBtn.setAttribute("onClick","removeGoalEvent(event)")
+
+            const btnText = document.createTextNode('X')
+            removeBtn.appendChild(btnText)
+
+
+            //add to listItem
+            listItem.appendChild(textDiv).appendChild(text)
+            listItem.appendChild(removeBtn)
+
+
+            //add to list
+            const ul = document.getElementById('goalsList')
+            ul.appendChild(listItem)
 
         }
 
@@ -215,6 +242,14 @@
 
         function toggleTodo(event){
            store.dispatch(toggleToDoAction(event.target.innerText))
+        }
+
+        function removeTodoEvent(event){
+            store.dispatch(removeToDoAction(event.target.parentNode.firstChild.innerText))
+        }
+
+        function removeGoalEvent(event){
+            store.dispatch(removeGoalAction(event.target.parentNode.firstChild.innerText))
         }
 
     </script>
