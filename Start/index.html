@@ -27,6 +27,7 @@
         const REMOVE_TODO = 'REMOVE_TODO';
         const ADD_GOAL = 'ADD_GOAL';
         const REMOVE_GOAL='REMOVE_GOAL';
+        const RECEIVE_DATA = 'RECEIVE_DATA'
 
         //Action generators
         function addToDoAction(todo){
@@ -70,6 +71,14 @@
             }
         }
 
+        function receiveDataAction(todos,goals){
+            return{
+                type:RECEIVE_DATA,
+                todos,
+                goals,
+            }
+        }
+
         //Reducer: takes in a state and a action and reduces it to a new state
         //Always a pure function
         function todos(state =[],action){ //initially state is undefined so need to set it's default
@@ -86,6 +95,8 @@
                         return todo.name !== action.todo.name ? todo:
                             Object.assign({},todo,{complete:!todo.complete}) //use Object assign in order not to mutate the original object (pure function)
                     })
+                case RECEIVE_DATA:
+                    return action.todos
                 default:
                     return state
             }
@@ -102,6 +113,19 @@
                     return state.filter((goal)=>{
                         return goal.name !== action.goal.name
                     })
+                case RECEIVE_DATA:
+                    return action.goals
+                default:
+                    return state
+            }
+        }
+
+        //reducer
+        function loading(state=true,action){
+
+            switch(action.type){
+                case RECEIVE_DATA:
+                    return false;
                 default:
                     return state
             }
@@ -138,7 +162,8 @@
         //Create the store
         const store = Redux.createStore(Redux.combineReducers({
             todos,
-            goals
+            goals,
+            loading
         }),Redux.applyMiddleware(checker,logger))
 
         //store.getState();
@@ -161,36 +186,71 @@
             const remove = (event)=>{
                 const name = event.target.parentNode.firstChild.innerText
                 const type = event.target.parentNode.parentNode.parentNode.firstChild.innerText
+                const id = event.target.parentNode.getAttribute("id")
+                const completeClass = event.target.parentNode.firstChild.getAttribute("class")
+                let complete = false
+                if(completeClass === "red"){
+                    complete = true
+                }
+
+                console.log(id)
+
                 if(type === "Todo List"){
                     props.store.dispatch(removeToDoAction(name))
+                    return API.deleteTodo(id)
+                        .catch((error)=>{
+                            props.store.dispatch(addToDoAction({name, id, complete}))
+                            alert(error)
+                        })
+
                 }
 
                 if(type === "Goals"){
                     props.store.dispatch(removeGoalAction(name))
+                    return API.deleteGoal(id)
+                        .catch((error)=>{
+                            props.store.dispatch(addGoalAction({name,id}))
+                            alert(error)
+                        })
+
                 }
 
 
             }
 
             const toggle = (event)=>{
+                const name = event.target.parentNode.firstChild.innerText
+                const id = event.target.parentNode.getAttribute("id")
                 const type = event.target.parentNode.parentNode.parentNode.firstChild.innerText
                 if(type === "Todo List"){
-                    const c = event.target.getAttribute("class")
-                    if(c === "red"){
-                        event.target.removeAttribute("class")
-                    }else{
-                        event.target.setAttribute("class","red")
-                    }
+                    props.store.dispatch(toggleToDoAction(name))
+                    return API.saveTodoToggle(id)
+                        .catch((error)=>{
+                            alert(error)
+                            props.store.dispatch(toggleToDoAction(name))
+                        })
+                    //const c = event.target.getAttribute("class")
+                    // if(c === "red"){
+                    //     event.target.removeAttribute("class")
+                    // }else{
+                    //     event.target.setAttribute("class","red")
+                    // }
                 }
+
+
             }
 
             return (
                 <ul>
                     {props.listItems && props.listItems.map((item)=>{
                         return <li
-                            key={item.name}
+                            key={item.id}
+                            id={item.id}
                         >
-                            <span onClick={(event)=>{toggle(event)}}>{item.name}</span>
+                            <span
+                                className={item.complete ? "red":""}
+                                onClick={(event)=>{toggle(event)}}
+                            >{item.name}</span>
                             <button onClick={(event)=>{
                                 remove(event)
                             }}>X</button>
@@ -288,6 +348,13 @@
             componentDidMount(){
                 const {store} = this.props
 
+                Promise.all([
+                    API.fetchTodos(),
+                    API.fetchGoals()
+                ]).then(([todos,goals])=>{
+                    store.dispatch(receiveDataAction(todos, goals))
+                })
+
                 store.subscribe(()=>{
                     this.forceUpdate()
                 })
@@ -295,7 +362,11 @@
 
             render(){
                 const {store} = this.props
-                const {todos,goals} = store.getState()
+                const {todos,goals,loading} = store.getState()
+
+                if(loading === true){
+                    return <h3>Loading...</h3>
+                }
 
                 return (
                     <div>
