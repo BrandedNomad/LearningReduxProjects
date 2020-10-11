@@ -269,16 +269,15 @@
 
             addItem(event){
                 event.preventDefault()
-                const name = this.input.value
-                this.input.value = ''
 
-                const state = this.props.store.getState()
-                let id = 0;
-                if(state !== undefined){
-                    id = state.todos.length
-                }
+                return API.saveTodo(this.input.value)
+                    .then((todo)=>{
+                        this.props.store.dispatch(addToDoAction(todo))
+                        this.input.value=''
+                    }).catch((error)=>{
+                        alert('Failed to add item. Try again')
+                    })
 
-                this.props.store.dispatch(addToDoAction({id,name,complete:false}))
             }
 
 
@@ -314,16 +313,15 @@
 
             addGoal(event){
                 event.preventDefault()
-                const name = this.input.value
-                this.input.value = ''
 
-                const state = this.props.store.getState()
-                let id = 0;
-                if(state !== undefined){
-                    id = state.goals.length
-                }
+                return API.saveGoal(this.input.value)
+                    .then((goal)=>{
+                        this.props.store.dispatch(addGoalAction(goal))
+                        this.input.value = ''
+                    }).catch((error)=>{
+                        alert("Failed to add goal. Try again")
+                    })
 
-                this.props.store.dispatch(addGoalAction({id,name}))
             }
 
             render(){
