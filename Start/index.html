@@ -80,6 +80,32 @@
             }
         }
 
+        function handleDeleteTodo(todo){
+
+            return (dispatch)=>{
+                dispatch(removeToDoAction(todo.name))
+                return API.deleteTodo(id)
+                    .catch((error)=>{
+                        dispatch(addToDoAction(todo))
+                        alert(error)
+                    })
+            }
+
+        }
+
+        function handleDeleteGoal(goal){
+
+            return (dispatch)=>{
+                dispatch(removeGoalAction(goal.name))
+                return API.deleteGoal(id)
+                    .catch((error)=>{
+                        dispatch(addGoalAction(goal))
+                        alert(error)
+                    })
+            }
+
+        }
+
         //Reducer: takes in a state and a action and reduces it to a new state
         //Always a pure function
         function todos(state =[],action){ //initially state is undefined so need to set it's default
@@ -157,6 +183,14 @@
 
         }
 
+        // const thunk = (store)=>(next)=>(action)=>{
+        //     if(typeof action === 'function'){
+        //         return action(store.dispatch)
+        //     }
+        //
+        //     return next(action)
+        // }
+
 
 
 
@@ -165,9 +199,9 @@
             todos,
             goals,
             loading
-        }),Redux.applyMiddleware(checker,logger))
+        }),Redux.applyMiddleware(ReduxThunk.default,checker,logger))
 
-        //store.getState();
+        //
 
 
 
@@ -194,28 +228,16 @@
                     complete = true
                 }
 
-                console.log(id)
 
                 if(type === "Todo List"){
-                    props.store.dispatch(removeToDoAction(name))
-                    return API.deleteTodo(id)
-                        .catch((error)=>{
-                            props.store.dispatch(addToDoAction({name, id, complete}))
-                            alert(error)
-                        })
+                    props.store.dispatch(handleDeleteTodo({name,id,complete}))
 
                 }
 
                 if(type === "Goals"){
-                    props.store.dispatch(removeGoalAction(name))
-                    return API.deleteGoal(id)
-                        .catch((error)=>{
-                            props.store.dispatch(addGoalAction({name,id}))
-                            alert(error)
-                        })
+                    props.store.dispatch(handleDeleteGoal({name,id}))
 
                 }
-
 
             }
 
@@ -230,12 +252,7 @@
                             alert(error)
                             props.store.dispatch(toggleToDoAction(name))
                         })
-                    //const c = event.target.getAttribute("class")
-                    // if(c === "red"){
-                    //     event.target.removeAttribute("class")
-                    // }else{
-                    //     event.target.setAttribute("class","red")
-                    // }
+
                 }
 
 
