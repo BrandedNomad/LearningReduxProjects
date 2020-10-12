@@ -1,3 +1,5 @@
+import API from 'goals-todos-api'
+
 export const ADD_TODO = 'ADD_TODO';
 export const TOGGLE_TODO = 'TOGGLE_TODO';
 export const REMOVE_TODO = 'REMOVE_TODO';
@@ -28,7 +30,6 @@ function removeToDoAction(name){
     }
 }
 
-import API from 'goals-todos-api'
 
 //Async handlers
 export function handleDeleteTodo(todo){
