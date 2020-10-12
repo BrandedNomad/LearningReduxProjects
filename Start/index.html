@@ -106,6 +106,48 @@
 
         }
 
+        function handleAddTodo(name){
+            return (dispatch)=>{
+                return API.saveTodo(name)
+                    .then((todo)=>{
+                        dispatch(addToDoAction(todo))
+                    }).catch((error)=>{
+                        alert('Failed to add item. Try again')
+                    })
+            }
+        }
+
+        function handleAddGoal(name){
+            return (dispatch)=>{
+                return API.saveGoal(name)
+                    .then((goal)=>{
+                        dispatch(addGoalAction(goal))
+                    }).catch((error)=>{
+                        alert("Failed to add goal. Try again")
+                    })
+            }
+        }
+
+        function handleReceiveData(store){
+            Promise.all([
+                API.fetchTodos(),
+                API.fetchGoals()
+            ]).then(([todos,goals])=>{
+                store.dispatch(receiveDataAction(todos, goals))
+            })
+        }
+
+        function handleToggleItem(todo){
+            return (dispatch)=>{
+                dispatch(toggleToDoAction(todo.name))
+                return API.saveTodoToggle(todo.id)
+                    .catch((error)=>{
+                        alert(error)
+                        dispatch(toggleToDoAction(todo.name))
+                    })
+            }
+        }
+
         //Reducer: takes in a state and a action and reduces it to a new state
         //Always a pure function
         function todos(state =[],action){ //initially state is undefined so need to set it's default
@@ -246,12 +288,7 @@
                 const id = event.target.parentNode.getAttribute("id")
                 const type = event.target.parentNode.parentNode.parentNode.firstChild.innerText
                 if(type === "Todo List"){
-                    props.store.dispatch(toggleToDoAction(name))
-                    return API.saveTodoToggle(id)
-                        .catch((error)=>{
-                            alert(error)
-                            props.store.dispatch(toggleToDoAction(name))
-                        })
+                    props.store.dispatch(handleToggleItem({name,id}))
 
                 }
 
@@ -287,23 +324,12 @@
 
             addItem(event){
                 event.preventDefault()
-
-                return API.saveTodo(this.input.value)
-                    .then((todo)=>{
-                        this.props.store.dispatch(addToDoAction(todo))
-                        this.input.value=''
-                    }).catch((error)=>{
-                        alert('Failed to add item. Try again')
-                    })
-
+                this.props.store.dispatch(handleAddTodo(this.input.value))
+                this.input.value=''
             }
 
 
-
             render(){
-
-
-
                 return(
                     <div>
                         <h1>Todo List</h1>
@@ -331,15 +357,8 @@
 
             addGoal(event){
                 event.preventDefault()
-
-                return API.saveGoal(this.input.value)
-                    .then((goal)=>{
-                        this.props.store.dispatch(addGoalAction(goal))
-                        this.input.value = ''
-                    }).catch((error)=>{
-                        alert("Failed to add goal. Try again")
-                    })
-
+                this.props.store.dispatch(handleAddGoal(this.input.value))
+                this.input.value = ''
             }
 
             render(){
@@ -363,17 +382,13 @@
         class App extends React.Component {
             componentDidMount(){
                 const {store} = this.props
-
-                Promise.all([
-                    API.fetchTodos(),
-                    API.fetchGoals()
-                ]).then(([todos,goals])=>{
-                    store.dispatch(receiveDataAction(todos, goals))
-                })
-
                 store.subscribe(()=>{
                     this.forceUpdate()
                 })
+
+                handleReceiveData(store);
+
+
             }
 
             render(){
